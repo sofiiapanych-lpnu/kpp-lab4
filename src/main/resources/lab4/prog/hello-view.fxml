@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="lab4.prog.WeatherManager">
+  <padding>
+    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+  </padding>
+
+
+  <Label fx:id="currentWeather"/>
+  <ComboBox fx:id="areaChoiceBox" promptText="Select Area" />
+  <TextField fx:id="interval" promptText="Enter a number" />
+  <Button text="Add" onAction="#onAddStationButtonClick"/>
+
+  <ScrollPane fitToWidth="true" fitToHeight="true">
+    <TableView fx:id="threadTable">
+      <columns>
+        <TableColumn fx:id="threadIdColumn" text="Thread ID" minWidth="200" />
+        <TableColumn fx:id="statusColumn" text="Status" minWidth="200" />
+        <TableColumn fx:id="resultColumn" text="Result" minWidth="200" />
+      </columns>
+    </TableView>
+  </ScrollPane>
+  <TableView fx:id="currentWeatherTable">
+    <columns>
+      <TableColumn text="Time" fx:id="timeColumn" />
+      <TableColumn text="Temperature (°C)" fx:id="temperatureColumn" />
+      <TableColumn text="Humidity (%)" fx:id="humidityColumn" />
+    </columns>
+  </TableView>
+
+</VBox>
