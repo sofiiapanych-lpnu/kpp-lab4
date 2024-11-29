@@ -6,13 +6,11 @@ public class ThreadInfoModel {
     private final SimpleStringProperty threadName;
     private final SimpleStringProperty status;
     private final SimpleStringProperty result;
-    private final SimpleStringProperty output;
 
-    public ThreadInfoModel(String threadId, String status, String result, String output) {
+    public ThreadInfoModel(String threadId, String status, String result) {
         this.threadName = new SimpleStringProperty(threadId);
         this.status = new SimpleStringProperty(status);
         this.result = new SimpleStringProperty(result);
-        this.output = new SimpleStringProperty(output);
     }
     public SimpleStringProperty getThreadName() {
         return threadName;
@@ -36,13 +34,5 @@ public class ThreadInfoModel {
 
     public void setThreadResult(String result) {
         this.result.set(result);
-    }
-
-    public SimpleStringProperty getThreadOutput() {
-        return output;
-    }
-
-    public void setThreadOutput(String output) {
-        this.output.set(output);
     }
 }

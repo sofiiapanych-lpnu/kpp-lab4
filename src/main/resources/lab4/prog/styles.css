@@ -1,0 +1,80 @@
+.table-view {
+    -fx-border-color: #ddd; /* Трохи світліший бордер */
+    -fx-border-width: 1px;
+    -fx-padding: 10px;
+    -fx-background-color: #fafafa; /* Легший фон для таблиці */
+}
+
+.table-column {
+    -fx-alignment: CENTER-LEFT; /* Вирівнювання тексту по лівому краю */
+    -fx-border-color: #eee; /* Світліший бордер між колонками */
+    -fx-border-width: 0 0 1px 1px;
+}
+
+.table-view .column-header {
+    -fx-background-color: #eaeaea; /* Світло-сірий фон для заголовків колонок */
+    -fx-font-weight: bold;
+    -fx-text-fill: #444; /* Трохи темніший текст */
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 5px;
+}
+
+.table-view .cell {
+    -fx-text-fill: #555;
+    -fx-background-color: transparent;
+}
+
+.table-view .cell:hover {
+    -fx-background-color: #f1f1f1;
+}
+
+.scroll-pane {
+    -fx-background: transparent;
+    -fx-padding: 5px;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+}
+
+.combo-box {
+    -fx-padding: 5px;
+    -fx-background-color: #fff;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 4px;
+    -fx-text-fill: #333;
+}
+
+.combo-box:hover {
+    -fx-border-color: #999;
+}
+
+.text-field {
+    -fx-padding: 5px;
+    -fx-background-color: #fff;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 4px;
+    -fx-text-fill: #333;
+}
+
+.text-field:focused {
+    -fx-border-color: #4CAF50;
+}
+
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+.label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}

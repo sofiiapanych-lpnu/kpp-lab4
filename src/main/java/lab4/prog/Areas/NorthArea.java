@@ -22,5 +22,9 @@ public class NorthArea implements IArea {
         return data;
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
 

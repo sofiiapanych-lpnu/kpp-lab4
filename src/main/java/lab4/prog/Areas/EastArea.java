@@ -21,5 +21,10 @@ public class EastArea implements IArea {
 
         return data;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
 
