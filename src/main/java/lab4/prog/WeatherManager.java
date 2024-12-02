@@ -96,45 +96,6 @@ public class WeatherManager {
         }
     }
 
-
-
-
-
-//    private void onRemoveStationFromTable() {
-//        ThreadInfoModel selectedThreadInfo = threadTable.getSelectionModel().getSelectedItem();
-//
-//        if (selectedThreadInfo != null) {
-//            String threadName = selectedThreadInfo.getThreadName().get();
-//
-//            if (threadName.contains(" ")) {
-//                String[] parts = threadName.split(" ");
-//
-//                if (parts.length > 1) {
-//                    try {
-//                        int stationId = Integer.parseInt(parts[1]);
-//
-//                        ScheduledFuture<?> futureToCancel = scheduledFutures.get(stationId);
-//
-//                        if (futureToCancel != null) {
-//                            futureToCancel.cancel(true);
-//                            scheduledFutures.remove(stationId);
-//                            System.out.println("Thread " + stationId + " has been cancelled.");
-//                        }
-//
-//                        threadInfoList.remove(selectedThreadInfo);
-//                    } catch (NumberFormatException e) {
-//                        System.err.println("Invalid station ID in thread name: " + threadName);
-//                    }
-//                } else {
-//                    System.err.println("Thread name format is incorrect: " + threadName);
-//                }
-//            } else {
-//                System.err.println("No station ID found in thread name: " + threadName);
-//            }
-//        } else {
-//            System.err.println("No thread selected");
-//        }
-//    }
     public void shutdownExecutors() {
         threadManager.shutdown();
     }

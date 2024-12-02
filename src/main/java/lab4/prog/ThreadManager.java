@@ -16,6 +16,8 @@ public class ThreadManager {
     ExecutorService fixedThreadPool;
     ScheduledExecutorService scheduledExecutor;
     private int taskId;
+    Semaphore semaphore;
+    Runnable uiUpdateCallback;
 
     public ThreadManager(Runnable uiUpdateCallback) {
         this.availableAreas = Arrays.asList(
@@ -26,12 +28,14 @@ public class ThreadManager {
         );
         this.results = new ConcurrentHashMap<>();
         this.threadInfoList = FXCollections.observableArrayList();
-        this.executor = new ScheduledThreadPoolExecutor(6);
+        this.executor = new ScheduledThreadPoolExecutor(2);
         this.scheduledFutures = new ConcurrentHashMap<>();
         this.fixedThreadPool = Executors.newFixedThreadPool(4);
         this.scheduledExecutor = Executors.newScheduledThreadPool(1);
         this.taskId = 1;
         scheduledExecutor.scheduleAtFixedRate(uiUpdateCallback, 0, 5, TimeUnit.SECONDS);
+        semaphore = new Semaphore(2);
+        this.uiUpdateCallback = uiUpdateCallback;
     }
 
     public List<IArea> getAvailableAreas() {
@@ -42,27 +46,46 @@ public class ThreadManager {
         return threadInfoList;
     }
 
+    // індивідуальне: щоб потоки завершувалися за 10 сек, обмежити до 2 потоків (спочатку повністю працюють перші
+    // 2 потоки, а потім починають наступні 2)
     public void addStation(IArea selectedArea, int interval) {
         int stationId = taskId++;
-        ThreadInfoModel threadInfo = new ThreadInfoModel("Thread " + stationId, "Waiting queue", "Waiting for result...");
+        ThreadInfoModel threadInfo = new ThreadInfoModel("Thread " + stationId, "Waiting queue",
+                "Waiting for result...");
         threadInfoList.add(threadInfo);
 
-        ScheduledFuture<?> future = executor.scheduleAtFixedRate(() -> {
-            threadInfo.setThreadStatus("Working");
+        // якщо використовувати семафор перед цим, то не зможемо додавати в чергу поки чекаємо
+        ScheduledFuture<?> future = executor.schedule(() -> {
             try {
-                Thread.sleep(500);
-                double[][] result = selectedArea.generateData();
-                synchronized (results) {
-                    results.put(stationId, result);
+                semaphore.acquire(); // потоки не будуть висіти, бо в executor все одно максимум 2
+
+                scheduledExecutor.schedule(() -> {
+                    removeStation(stationId);
+                }, 10, TimeUnit.SECONDS);
+
+                while (!Thread.currentThread().isInterrupted()) {
+                    threadInfo.setThreadStatus("Working");
+                    Thread.sleep(500); // для відображення статусу Working
+                    try {
+                        double[][] result = selectedArea.generateData();
+                        results.put(stationId, result);
+                        String resultText = Arrays.deepToString(result);
+                        threadInfo.setThreadResult(resultText);
+
+                        threadInfo.setThreadStatus("Sleeping");
+
+                        Thread.sleep(interval * 1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
                 }
-                String resultText = Arrays.deepToString(result);
-                threadInfo.setThreadStatus("Sleeping");
-                threadInfo.setThreadResult(resultText);
-                //uiUpdateCallback.run();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            } finally {
+                semaphore.release();
             }
-        }, 0, interval, TimeUnit.SECONDS);
+        }, 0, TimeUnit.SECONDS);
 
         scheduledFutures.put(stationId, future);
     }
@@ -92,23 +115,21 @@ public class ThreadManager {
         if (results.isEmpty()) return null;
 
         List<Future<double[][]>> futures = new ArrayList<>();
-        synchronized (results) {
-            for (double[][] data : results.values()) {
-                futures.add(fixedThreadPool.submit(() -> {
-                    int intervalLength = data.length / 24;
-                    double[][] result = new double[24][2];
-                    for (int i = 0; i < 24; i++) {
-                        double tempSum = 0, humiditySum = 0;
-                        for (int j = i * intervalLength; j < (i + 1) * intervalLength; j++) {
-                            tempSum += data[j][0];
-                            humiditySum += data[j][1];
-                        }
-                        result[i][0] = tempSum / intervalLength;
-                        result[i][1] = humiditySum / intervalLength;
+        for (double[][] data : results.values()) {
+            futures.add(fixedThreadPool.submit(() -> {
+                int intervalLength = data.length / 24;
+                double[][] result = new double[24][2];
+                for (int i = 0; i < 24; i++) {
+                    double tempSum = 0, humiditySum = 0;
+                    for (int j = i * intervalLength; j < (i + 1) * intervalLength; j++) {
+                        tempSum += data[j][0];
+                        humiditySum += data[j][1];
                     }
-                    return result;
-                }));
-            }
+                    result[i][0] = tempSum / intervalLength;
+                    result[i][1] = humiditySum / intervalLength;
+                }
+                return result;
+            }));
         }
 
         double[][] sum = new double[24][2];
